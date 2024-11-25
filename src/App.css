@@ -1,0 +1,8 @@
+footer{position: absolute;
+top: 690px;
+height: 100px;
+width: 100%;
+background-color: rgb(180, 173, 173);}
+
+
+#bt:hover{border: 3px solid gray;}
