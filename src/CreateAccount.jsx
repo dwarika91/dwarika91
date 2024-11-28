@@ -1,62 +1,210 @@
-import React from "react"
-import logo from "../src/assets/amazon.png"
+import React, { useState } from "react";
+import logo from "../src/assets/amazon.png";
+import { Link } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./dataBaseConfig";
+import {getDatabase,ref,set} from "firebase/database"
 
-const CreatAccount = () => {
-    return (
-        <div style={{display:"flex", justifyContent:"center"}} className="main">
+const CreateAccount = () => {
+  const db = getDatabase();
+  const [formdata, setFormdata] = useState({
+    email: "",
+    password: "",
+    mobile: "",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const c = /^[6-9]\d{9}$/;
+
+  const handleChange = (e) => {
+    setFormdata({
+      ...formdata,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { email, password, mobile } = formdata;
+
+    if (c.test(mobile)) {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        setSuccess("Account created successfully!");
+        set(ref(db, 'users/' + mobile), {
+        mail:email,
+        pass:password,
+        mob:mobile
+        });
+        setError("");
+      } catch (err) {
+        setError(err.message);
+        setSuccess("");
+      }
+    } else {
+      alert(
+        "Please enter a valid mobile number starting with 6-9 and 10 digits in length."
+      );
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }} className="main">
+      <div>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{
+            width: "120px",
+            height: "90px",
+            position: "relative",
+            left: "100px",
+          }}
+        />
+        <div
+          style={{
+            width: "280px",
+            border: "1px solid gray",
+            borderRadius: "10px",
+            padding: "20px",
+            backgroundColor: "white",
+          }}
+        >
+          <h1 style={{ fontSize: "28px", fontFamily: " Arial, sans-serif" }}>
+            Create Account
+          </h1>
+
+          <form onSubmit={handleSubmit}>
             <div>
-            <img src={logo} alt="" style={{width:"120px", height:"90px", position:"relative", left:"100px"}}/>
-            <div style={{width:"280px", border:"1px solid gray", borderRadius:"10px", padding:"20px", backgroundColor:"white"}}>
-                 <h1 style={{fontSize:"28px", fontFamily:" Arial, sans-serif"}}>Create Account</h1>
-                <div>
-                    <label htmlFor="n" style={{fontWeight:"550" }} >Your Name</label> <br /> 
-                    <input type="text" id="n" placeholder="Fist and last name " style={{width:"95%", marginLeft:"0.5%", height:"20px", marginTop:"5px"}} />
-                </div>
-                <div style={{marginTop:"5px"}}> <label htmlFor="mn" style={{fontWeight:"550"}}>Mobile Number</label><br /></div>
-                <div >   <select style={{width:"20%" , height:"25px" , marginTop:"5px"}}>
-                            <option value=""> India +91</option>
-                            <option value="">haiti + 509</option>
-                            <option value=""> Hungary 354</option>
-                            <option value="">Guyana + 592</option>
-                            <option value="">Honduras +504</option>
-                            <option value=""> Hong kong + 852</option>
-                        </select>
-                    <input type="text" placeholder="Mobil Number" id="mn" style={{width:"75%", marginLeft:"2px", height:"20px"}}/>
-                </div>
-
-                <div style={{marginTop:"5px"}} >
-                   <label htmlFor="pa" className="pass" style={{fontWeight:"550"}}>Password</label><br /> <input type="text" id="pa" placeholder="At least 6 characters" style={{width:"95%", marginLeft:"0.5%", height:"20px", marginTop:"5px"}}/>
-                </div>
-
-                <div style={{marginTop:"15px"}}>
-                    <span>To verify your number, we will send you a text message with a temporary code. Message and data rates may apply.</span>
-                </div>
-                <div className="verify-btn">
-                    <center><button style={{marginTop:"20px", padding:"5px", width:"290px", backgroundColor:"gold", border:"1px solid gray", borderRadius:"10px"}} id="bt">Verify mobile number</button></center>
-                </div><hr />
-
-                <h5 style={{fontFamily:"Arial, sans-serif"}}>Buying for work?</h5>
-                <span style={{position:"relative", bottom:"15px"}}><a href="" style={{textDecoration:"none"}}>Create a free business account</a></span><hr />
-
-                <div>
-                    <h5>Already have an account? <a href="" style={{textDecoration:"none"}}>Sign in</a></h5>
-                    <p style={{fontSize:"13px"}}>By creating an account or logging in, you agree to Amazon’s <a href="">Conditions of use</a>and<a href="">Privacy Policy</a>.</p>
-                </div>
+              <label htmlFor="email" style={{ fontWeight: "550" }}>
+                Email
+              </label>
+              <br />
+              <input
+                required
+                type="email"
+                id="email"
+                placeholder="Enter email"
+                onChange={handleChange}
+                style={{
+                  width: "95%",
+                  marginLeft: "0.5%",
+                  height: "20px",
+                  marginTop: "5px",
+                }}
+              />
             </div>
-            </div>
-            
-            <footer>
-                <center><ul style={{listStyle:"none", display:"flex", justifyContent:"center", gap:"25px", marginRight:"50px"}} className="ul">
-                    <li><a href="" style={{textDecoration:"none"}}>Conditions of use</a></li>
-                    <li><a href="" style={{textDecoration:"none"}}>Privacy Policy</a></li>
-                    <li><a href="" style={{textDecoration:"none"}}>help</a></li>
-                </ul></center>
-                <center><p>© 1996-2024, Amazon.com, Inc. or its affiliates</p></center>
-            </footer>
+            <div style={{ marginTop: "5px" }}>
+              <label htmlFor="password" style={{ fontWeight: "550" }}>
+                Password
+              </label>
+              <br />
+              <input
+                required
+                type="password"
+                id="password"
+                placeholder="At least 6 characters"
+                onChange={handleChange}
+                style={{
+                  width: "95%",
+                  marginLeft: "0.5%",
+                  height: "20px",
+                  marginTop: "5px",
+                }}
+              />
 
+              <input
+                style={{
+                  width: "95%",
+                  marginLeft: "0.5%",
+                  height: "20px",
+                  marginTop: "5px",
+                }}
+                required
+                type="text"
+                id="mobile"
+                placeholder="Enter mobile"
+                onChange={handleChange}
+              />
+            </div>
+
+            <div style={{ marginTop: "15px" }}>
+              <span>
+                To verify your email, we will send you a confirmation link.
+              </span>
+            </div>
+            <div className="verify-btn">
+              <center>
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: "20px",
+                    padding: "5px",
+                    width: "290px",
+                    backgroundColor: "gold",
+                    border: "1px solid gray",
+                    borderRadius: "10px",
+                  }}
+                >
+                  Create Account
+                </button>
+              </center>
+            </div>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            {success && <p style={{ color: "green" }}>{success}</p>}
+          </form>
+
+          <hr />
+
+          <div>
+            <Link to="/login">Login here</Link>
+            <p style={{ fontSize: "13px" }}>
+              By creating an account, you agree to Amazon’s{" "}
+              <a href="">Conditions of Use</a> and <a href="">Privacy Policy</a>
+              .
+            </p>
+          </div>
         </div>
-    )
-}
+      </div>
 
-export default CreatAccount
+      <footer>
+        <center>
+          <ul
+            style={{
+              listStyle: "none",
+              display: "flex",
+              justifyContent: "center",
+              gap: "25px",
+              marginRight: "50px",
+            }}
+            className="ul"
+          >
+            <li>
+              <a href="" style={{ textDecoration: "none" }}>
+                Conditions of Use
+              </a>
+            </li>
+            <li>
+              <a href="" style={{ textDecoration: "none" }}>
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a href="" style={{ textDecoration: "none" }}>
+                Help
+              </a>
+            </li>
+          </ul>
+        </center>
+        <center>
+          <p>© 1996-2024, Amazon.com, Inc. or its affiliates</p>
+        </center>
+      </footer>
+    </div>
+  );
+};
 
+export default CreateAccount;
