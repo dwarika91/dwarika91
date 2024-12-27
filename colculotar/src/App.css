@@ -1,0 +1,30 @@
+.main {
+    background-color: rgb(128, 124, 124);
+    height: 700px;
+
+}
+
+.cal {
+    border: 20%;
+  
+    margin-left: 40%;
+    position: relative;
+    top: 30%;
+    width: 245px;
+    height: 348px;
+
+}
+
+.cal input {
+    width: 234px;
+    height: 100px;
+}
+
+.cal button {
+
+    width: 80px;
+    height: 40px;
+    background-color: brown;
+    color: white;
+
+}
